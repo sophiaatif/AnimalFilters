@@ -10,18 +10,18 @@
 <style>
 #container {
     margin: 0px auto;
-    width: 500px;
-    height: 375px;
+    width: 1000px;
+    height: 700px;
     border: 10px #333 solid;
 }
 #videoElement {
-    width: 50px;
-    height: 35px;
+    width: 5px;
+    height: 3px;
     background-color: #666;
 }
 #target {
-    width: 500px;
-    height: 375x;
+    width: 1000px;
+    height: 700;
     background-color: #5E5DB6;
     transform: rotateY(180deg);
     -webkit-transform:rotateY(180deg); /* Safari and Chrome */
@@ -37,7 +37,7 @@
     <video autoplay="true" id="videoElement"></video>
 
 <div id="container">
-<canvas id="target" width="500" height="375"></canvas>
+<canvas id="target" width="1000" height="700"></canvas>
 </div>
 
 <script>
@@ -77,8 +77,8 @@ if (navigator.getUserMedia) {
     var target = document.getElementById("target");
     var bc = document.createElement("canvas");
     
-    bc.width = 500;
-    bc.height = 375;
+    bc.width = 1000;
+    bc.height = 700;
     
     //blurKereinIssay(0.2);
     
@@ -89,8 +89,8 @@ if (navigator.getUserMedia) {
     
     
      //get data
-    ctx2.drawImage(video, 0 , 0, 500, 375);
-    var pData = ctx2.getImageData(0,0,500,375);  //getImageData is a built in function to return pixels from a frame
+    ctx2.drawImage(video, 0 , 0, 1000, 700);
+    var pData = ctx2.getImageData(0,0,1000,700);  //getImageData is a built in function to return pixels from a frame
     //apply filter
     pData = protanopia(pData);
     
