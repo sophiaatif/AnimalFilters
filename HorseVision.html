@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="stuff, to, help, search, engines, not" name="keywords">
+<meta content="What this page is about." name="description">
+<meta content="Display Webcam Stream" name="title">
+<title>Display Webcam Stream</title>
+  
+<style>
+   
+#videoElement {
+    width: 5px;
+    height: 3px;
+    background-color: #666;
+    
+}
+#container{
+    position: relative;
+    width: 450px;
+    height: 375px;
+}
+#videoCanvas {
+    width: 500px;
+    height: 375px;
+    background-color: #A9B65D;
+    transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+    -moz-transform:rotateY(180deg);
+}
+#target {
+    width: 500;
+    height: 375px;
+    position: absolute;
+    bottom: 0px;
+    right: 10px;
+    background-color: #5E5DB6;
+    transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+    -moz-transform:rotateY(180deg);
+}
+#clipContainer{
+    overflow: hidden;
+    display: inline-flex;
+    height: 500px;
+    width: 50%;
+}
+.crop-container {
+    width: 200px;
+    height: 375px;
+    overflow: hidden;
+}
+.crop-container videoCanvas {
+    margin-right: 200px;
+}
+
+</style>
+</head>
+  
+<body>
+        <button onclick="drawVideo2()">Click me</button>
+<video autoplay="true" id="videoElement"></video>
+    <div id="container">
+        <div class="crop-container">
+            <canvas id="videoCanvas" width="500" height="375"></canvas>
+        </div>
+        <div id="clipContainer">
+            <canvas id="target" width="250" height="375"></canvas>
+        </div>
+    </div>
+
+<script>
+ var video = document.querySelector("#videoElement");
+ var alpha = 1.00;
+
+ function protanopia(pixels){
+     var d = pixels.data;
+     
+     for(var i=0; i<d.length; i+=4){
+         var r = d[i];
+         var g = d[i+1];
+         var b = d[i+2];
+         //convert to appropriate protanopia value
+         d[i] = 0.567*r + 0.433*g;
+         d[i+1] = 0.558*r + 0.442*g;
+         d[i+2] = 0.242*g + .758*b;
+     }
+     return pixels;
+ }
+
+ function videoError(e) {
+    // do something
+}
+
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+ 
+ function handleVideo(stream) {
+    video.src = window.URL.createObjectURL(stream);
+}
+if (navigator.getUserMedia) {       
+    navigator.getUserMedia({video: true}, handleVideo, videoError);
+}
+// draw the target video
+ function drawVideo(){
+    //declare stuff
+    var target = document.getElementById("target");
+    var bc = document.createElement("canvas");
+    bc.width = 500;
+    bc.height = 375;
+    
+    
+    //get coontexts
+     var ctx = target.getContext("2d");
+     var ctx2 = bc.getContext("2d");
+
+    //get data
+    ctx2.drawImage(video, 0 , 0, 500, 375);
+
+    //sourceCtx.drawImage(video, 0 , 0, 500, 375);
+
+    var pData = ctx2.getImageData(0,0,500,375);  //getImageData is a built in function to return pixels from a frame
+    //var bData = sourceCtx.getImageData(0,0,500,375);
+    //apply filter
+    pData = protanopia(pData);
+   // bData = protanopia(bData);
+    ctx.putImageData(pData, 0,0);
+    //backupC.putImageData(pData, 0,0);
+    setTimeout(drawVideo,20);
+ }
+ function drawVideo2(){
+    //declare stuff
+    var videoCanvas = document.getElementById("videoCanvas");
+    var bc2 = document.createElement("canvas");
+    bc2.width = 500;
+    bc2.height = 375;
+    
+    
+    //get coontexts
+     var ctx_ = videoCanvas.getContext("2d");
+     var ctx2_ = bc2.getContext("2d");
+
+    //get data
+    ctx2_.drawImage(video, 0 , 0, 500, 375);
+
+    //sourceCtx.drawImage(video, 0 , 0, 500, 375);
+
+    var pData_ = ctx2_.getImageData(0,0,500,375);  //getImageData is a built in function to return pixels from a frame
+    //var bData = sourceCtx.getImageData(0,0,500,375);
+    //apply filter
+    pData_ = protanopia(pData_);
+   // bData = protanopia(bData);
+    ctx_.putImageData(pData_, 0,0);
+    //backupC.putImageData(pData, 0,0);
+    setTimeout(drawVideo2,20);
+ }
+
+ window.onload = function(){
+    document.getElementById("videoElement").addEventListener("play", drawVideo, false);
+   
+}
+
+</script>
+</body>
+</html>

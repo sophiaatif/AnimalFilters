@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="stuff, to, help, search, engines, not" name="keywords">
+<meta content="What this page is about." name="description">
+<meta content="Display Webcam Stream" name="title">
+<title>Display Webcam Stream</title>
+
+<style>
+#container {
+    margin: 0px auto;
+    width: 500px;
+    height: 375px;
+    border: 10px #333 solid;
+}
+#videoElement {
+    width: 50px;
+    height: 35px;
+    background-color: #666;
+}
+#target {
+    width: 500px;
+    height: 375x;
+    background-color: #5E5DB6;
+    transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+    -moz-transform:rotateY(180deg);
+
+}
+
+</style>
+</head>
+
+<body>
+
+    <video autoplay="true" id="videoElement">
+
+    </video>
+    <div id="container">
+<canvas id="target" width="500" height="375"></canvas>
+</div>
+
+<script>
+ var video = document.querySelector("#videoElement");
+
+
+ function owlVision(pixels){
+   var d=pixels.data;
+   for (var i=0; i<d.length; i+=4){
+     var r=d[i];
+     var g=d[i+1];
+     var b=d[i+2];
+
+     var avrg=(r+g+b)/3;
+     //r=avrg;
+     //g=avrg;
+
+     rgbArray=[r,g,b];
+     rgbArray=changeHue(rgbArray,40);
+     rgbArray=changeValue(rgbArray,0);
+     if(r==g&&g==b)
+       {
+         d[i]=avrg;
+         d[i+1]=avrg;
+         d[i+2]=avrg;
+
+       }
+    else{
+     d[i]=rgbArray[0];
+     d[i+1]=rgbArray[1];
+     d[i+2]=rgbArray[2];
+    }
+
+   }
+   return pixels;
+ }
+
+function changeHue(rgbArray, value){
+    //value is amount of saturation
+    hsvArray=RGBtoHSV(rgbArray);
+    hsvArray[0]+=value; //increase saturation by 'value'
+
+    rgbSaturated=HSVtoRGB(hsvArray);
+    return rgbSaturated;
+};
+function changeSaturation(rgbArray, value){
+    //value is amount of saturation
+    hsvArray=RGBtoHSV(rgbArray);
+    hsvArray[1]+=value; //increase saturation by 'value'
+
+    rgbSaturated=HSVtoRGB(hsvArray);
+    return rgbSaturated;
+};
+function changeValue(rgbArray, value){
+    //value is amount of saturation
+    hsvArray=RGBtoHSV(rgbArray);
+    hsvArray[2]+=value; //increase saturation by 'value'
+
+    rgbSaturated=HSVtoRGB(hsvArray);
+    return rgbSaturated;
+};
+RGBtoHSV= function(rgbArray) {
+       var r,g,b,h,s,v;
+       r=rgbArray[0];
+       g=rgbArray[1];
+       b=rgbArray[2];
+       min = Math.min( r, g, b );
+       max = Math.max( r, g, b );
+
+       v = max;
+       delta = max - min;
+       if( max != 0 )
+           s = delta / max;        // s
+       else {
+           // r = g = b = 0        // s = 0, v is undefined
+           s = 0;
+           h = -1;
+           return [h, s, undefined];
+       }
+       if( r === max )
+           h = ( g - b ) / delta;      // between yellow & magenta
+       else if( g === max )
+           h = 2 + ( b - r ) / delta;  // between cyan & yellow
+       else
+           h = 4 + ( r - g ) / delta;  // between magenta & cyan
+       h *= 60;                // degrees
+       if( h < 0 )
+           h += 360;
+       if ( isNaN(h) )
+           h = 0;
+       return [h,s,v];
+   };
+
+   HSVtoRGB= function(color) {
+         var i;
+         var h,s,v,r,g,b;
+         h= color[0];
+         s= color[1];
+         v= color[2];
+         if(s === 0 ) {
+             // achromatic (grey)
+             r = g = b = v;
+             return [r,g,b];
+         }
+         h /= 60;            // sector 0 to 5
+         i = Math.floor( h );
+         f = h - i;          // factorial part of h
+         p = v * ( 1 - s );
+         q = v * ( 1 - s * f );
+         t = v * ( 1 - s * ( 1 - f ) );
+         switch( i ) {
+             case 0:
+                 r = v;
+                 g = t;
+                 b = p;
+                 break;
+             case 1:
+                 r = q;
+                 g = v;
+                 b = p;
+                 break;
+             case 2:
+                 r = p;
+                 g = v;
+                 b = t;
+                 break;
+             case 3:
+                 r = p;
+                 g = q;
+                 b = v;
+                 break;
+             case 4:
+                 r = t;
+                 g = p;
+                 b = v;
+                 break;
+             default:        // case 5:
+                 r = v;
+                 g = p;
+                 b = q;
+                 break;
+         }
+         return [r,g,b];
+     };
+
+
+ function videoError(e) {
+    // do something
+}
+
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+
+ function handleVideo(stream) {
+    video.src = window.URL.createObjectURL(stream);
+}
+if (navigator.getUserMedia) {
+    navigator.getUserMedia({video: true}, handleVideo, videoError);
+}
+
+// draw the target video
+ function drawVideo(){
+    //declare stuff
+    var target = document.getElementById("target");
+    var bc = document.createElement("canvas");
+    bc.width = 500;
+    bc.height = 375;
+    //get coontexts
+     var ctx = target.getContext("2d");
+     var ctx2 = bc.getContext("2d");
+
+     //get data
+    ctx2.drawImage(video, 0 , 0, 500, 375);
+    var pData = ctx2.getImageData(0,0,500,375);  //getImageData is a built in function to return pixels from a frame
+    //apply filter
+    pData = owlVision(pData);
+    ctx.putImageData(pData, 0,0);
+
+    setTimeout(drawVideo,20);
+
+ }
+ window.onload = function(){
+    document.getElementById("videoElement").addEventListener("play", drawVideo, false);
+}
+
+</script>
+</body>
+</html>
