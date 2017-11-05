@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta content="stuff, to, help, search, engines, not" name="keywords">
 <meta content="What this page is about." name="description">
-<meta content="Display Webcam Stream" name="title">
-<title>Display Webcam Stream</title>
+<meta content="Owl" name="title">
+<title>Owl</title>
 
 <style>
 #container {
     margin: 0px auto;
-    width: 1000px;
-    height: 700px;
+    width: 1100px;
+    height: 750px;
     border: 10px #333 solid;
 }
 #videoElement {
@@ -20,8 +20,8 @@
     background-color: #666;
 }
 #target {
-    width: 1000px;
-    height: 700x;
+    width: 1100px;
+    height: 750x;
     background-color: #5E5DB6;
     transform: rotateY(180deg);
     -webkit-transform:rotateY(180deg); /* Safari and Chrome */
@@ -38,7 +38,7 @@
 
     </video>
     <div id="container">
-<canvas id="target" width="1000" height="700"></canvas>
+<canvas id="target" width="1100" height="750"></canvas>
 </div>
 
 <script>
@@ -57,8 +57,8 @@
      //g=avrg;
 
      rgbArray=[r,g,b];
-     rgbArray=changeHue(rgbArray,40);
-     rgbArray=changeValue(rgbArray,0);
+     rgbArray=changeHue(rgbArray,200);
+     rgbArray=changeSaturation(rgbArray,-0.4);
      if(r==g&&g==b)
        {
          d[i]=avrg;
@@ -203,15 +203,15 @@ if (navigator.getUserMedia) {
     //declare stuff
     var target = document.getElementById("target");
     var bc = document.createElement("canvas");
-    bc.width = 1000;
-    bc.height = 700;
+    bc.width = 1100;
+    bc.height = 750;
     //get coontexts
      var ctx = target.getContext("2d");
      var ctx2 = bc.getContext("2d");
 
      //get data
-    ctx2.drawImage(video, 0 , 0, 1000, 700);
-    var pData = ctx2.getImageData(0,0,1000,700);  //getImageData is a built in function to return pixels from a frame
+    ctx2.drawImage(video, 0 , 0, 1100, 750);
+    var pData = ctx2.getImageData(0,0,1100,750);  //getImageData is a built in function to return pixels from a frame
     //apply filter
     pData = owlVision(pData);
     ctx.putImageData(pData, 0,0);
